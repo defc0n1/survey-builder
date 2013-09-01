@@ -9,7 +9,7 @@ if (Meteor.isClient)
 
   # surveyPage
   Template.surveyPage.surveyFields = ->
-    SurveyFields.find({page_id: "" + @_id}).fetch()
+    SurveyFields.find({page_id: "" + @_id}, sort: {position: 1}).fetch()
 
   Template.surveyPage.helpers
     displayField: ->
@@ -30,6 +30,14 @@ if (Meteor.isClient)
 
     'click .done': (e) ->
       Session.set('selectedFieldId', "")
+
+    'blur .questionTitle': (e) ->
+      SurveyFields.update(@_id, {$set: {title: e.target.value}})
+    'blur .questionHelpText': (e) ->
+      SurveyFields.update(@_id, {$set: {description: e.target.value}})
+    'blur .questionHelpTextArea': (e) ->
+      SurveyFields.update(@_id, {$set: {description: e.target.value}})
+
   }
 
   helpers = {
@@ -46,16 +54,10 @@ if (Meteor.isClient)
       containment: ".main"
     })
     # $( ".question" ).parent().disableSelection()
-    $( ".survey-header" ).parent().parent().sortable({ disabled: true })
+    $( ".header" ).parent().sortable({ disabled: true })
 
   # shortInput
-  Template.shortInput.events(_.extend({
-    'blur .questionTitle': (e) ->
-      SurveyFields.update(@_id, {$set: {title: e.target.value}})
-    'blur .questionHelpText': (e) ->
-      SurveyFields.update(@_id, {$set: {description: e.target.value}})
-
-  }, events))
+  Template.shortInput.events(_.extend({}, events))
   Template.shortInput.helpers(_.extend({}, helpers))
 
   # surveyHeader
@@ -73,6 +75,9 @@ if (Meteor.isClient)
         unless key == "_id"
           copy[key] = value
       )
+      fields = SurveyFields.find({}, sort: {position: 1}).fetch()
+      copy.position = fields[fields.length - 1].position + 1
+
       copyId = SurveyFields.insert(copy)
       Session.set('selectedFieldId', copyId )
 
