@@ -1,0 +1,97 @@
+<head>
+  <title>Ultimate Survey Builder</title>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      {{> mainSurvey}}
+      {{> mainSidebar}}
+    </div>
+  </div>
+</body>
+
+<template name="mainSurvey">
+  <div class="main span8">
+    {{#each surveyPages}}
+      {{> surveyPage}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="surveyPage">
+  <p class="page-number"><span>Page {{page}}</span></p>
+  {{#each surveyFields}}
+    <div class="row-fluid">
+      {{{displayField}}}
+    </div>
+  {{/each}}
+</template>
+
+<template name="surveyHeader">
+  <div class="question">
+    <input class="survey-header span12" type="text" placeholder="Survey Name" value="{{title}}" />
+    <textarea class="survey-description span12" type="text" placeholder="Survey Description">{{description}}</textarea>
+  </div>
+</template>
+
+<template name="shortInput">
+  {{#if isFocused}}
+    <div class="question focused">
+      {{> fieldTools}}
+      <form class="form-horizontal">
+        <div class="control-group">
+          <label class="control-label" for="questionTitle">Question:</label>
+          <div class="controls">
+            <input type="text" name="questionTitle" class="input-xxlarge questionTitle" placeholder="Question Title" value="{{title}}">
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="questionHelpText">Help Text:</label>
+          <div class="controls">
+            <input type="text" name="questionHelpText" class="input-xxlarge questionHelpText" placeholder="Help Text" value="{{description}}">
+          </div>
+        </div>
+      </form>
+      <div class="row-fluid bottom-options">
+        <button class="btn btn-primary span2 done">Done</button>
+        <label class="checkbox span2">
+          <input type="checkbox" class="required-check"> Required
+        </label>
+      </div>
+    </div>
+  {{else}}
+    <div class="question">
+      {{> fieldTools}}
+      <h4>
+        {{#if required}}
+        *
+        {{/if}}
+        {{title}}
+      </h4>
+      <p class="description">{{description}}</p>
+      <input class="short-input span4 type='text'" />
+    </div>
+  {{/if}}
+</template>
+
+<template name="fieldTools">
+  <p class="fieldTools">
+    <a class="btn edit" data-toggle="tooltip" title="Edit Question"><i class="icon-edit"></i></a>
+    <a class="btn copy" data-toggle="tooltip" title="Copy Question"><i class="icon-plus"></i></a>
+    <a class="btn delete" data-toggle="tooltip" title="Delete Question"><i class="icon-trash"></i></a>
+  </p>
+</template>
+
+<template name="mainSidebar">
+  <div class="sidebar" data-spy="affix" data-offset-top="100">
+    <ul class="nav nav-tabs">
+      <li><a href="#standard" data-toggle="tab">Standard</a></li>
+      <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+      <li><a href="#appearance" data-toggle="tab">Appearance</a></li>
+      <li><a href="#optio" data-toggle="tab">Options</a></li>
+    </ul>
+  </div>
+</template>
+
+
