@@ -1,5 +1,5 @@
 if (Meteor.isClient)
-  console.log("yay I'm loaded")
+  # Collection setup
   Pages = new Meteor.Collection("pages")
   SurveyFields = new Meteor.Collection("fields")
 
@@ -9,7 +9,7 @@ if (Meteor.isClient)
 
   # surveyPage
   Template.surveyPage.surveyFields = ->
-    SurveyFields.find({page_id: "" + @_id}, sort: {position: 1}).fetch()
+    SurveyFields.find({pageId: "" + @_id}, sort: {position: 1}).fetch()
 
   Template.surveyPage.helpers
     displayField: ->
@@ -17,7 +17,7 @@ if (Meteor.isClient)
 
 
   ### FIELD TYPES ###
-  events = {
+  events =
     'dblclick': (e) ->
       Session.set('selectedFieldId', @_id)
 
@@ -38,31 +38,38 @@ if (Meteor.isClient)
     'blur .questionHelpTextArea': (e) ->
       SurveyFields.update(@_id, {$set: {description: e.target.value}})
 
-  }
-
-  helpers = {
+  helpers =
     isFocused: ->
       Session.get('selectedFieldId') == @_id
-  }
 
-  Template.shortInput.rendered = ->
-    $( ".question" ).parent().sortable({
+  # inputField
+  Template.inputField.events(_.extend({}, events))
+  Template.inputField.helpers(_.extend({
+      isShort: ->
+        @type == "shortInput"
+
+      isLong: ->
+        @type == "longInput"
+    }, helpers
+  ))
+
+  # surveyHeader
+  Template.surveyHeader.events(_.extend({}, events))
+  Template.surveyHeader.helpers(_.extend({}, helpers))
+
+  Template.surveyHeader.rendered = ->
+    $( ".question" ).parent().sortable(
       axis: "y"
       revert: true
       placeholder: "sortable-placeholder"
       forcePlaceholderSize: true
       containment: ".main"
-    })
-    # $( ".question" ).parent().disableSelection()
-    $( ".header" ).parent().sortable({ disabled: true })
+    )
+    $( ".header" ).parent().sortable( disabled: true )
 
-  # shortInput
-  Template.shortInput.events(_.extend({}, events))
-  Template.shortInput.helpers(_.extend({}, helpers))
-
-  # surveyHeader
-  Template.surveyHeader.events(_.extend({}, events))
-  Template.surveyHeader.helpers(_.extend({}, helpers))
+  # multipleChoice
+  Template.multipleChoice.events(_.extend({}, events))
+  Template.multipleChoice.helpers(_.extend({}, helpers))
 
   # fieldTools
   Template.fieldTools.events({
@@ -90,4 +97,38 @@ if (Meteor.isClient)
     $(".copy").tooltip()
     $(".delete").tooltip()
 
+  createField = (config) ->
+    if !config.template
+      throw "Must provide a template"
 
+    newField = _.extend({
+      title: ""
+      description: ""
+      position: SurveyFields.findOne({}, sort: {position: -1}).position + 1
+      pageId: Pages.findOne({}, sort: {page: -1})._id
+      }, config)
+
+    copyId = SurveyFields.insert(newField)
+
+    Session.set('selectedFieldId', copyId)
+
+  Template.mainSidebar.events(
+
+    'click .short-input': ->
+      createField(
+        type: "shortInput"
+        template: "inputField"
+      )
+
+    'click .long-input': ->
+      createField(
+        type: "longInput"
+        template: "inputField"
+      )
+
+    'click .multiple-choice': ->
+      createField(
+        template: "multipleChoice"
+        options: [{name: "Option 1", selected: false}]
+      )
+  )

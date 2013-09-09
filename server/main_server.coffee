@@ -8,17 +8,9 @@ if (Meteor.isServer)
       pageId = Pages.insert({page: 1})
 
       SurveyFields.insert(
-        page_id: pageId
+        pageId: pageId
         template: "surveyHeader"
         title: ""
         description: ""
         position: 1
-      )
-
-      SurveyFields.insert(
-        page_id: pageId
-        template: "shortInput"
-        title: "What is your name?"
-        description: "Please enter your full name..."
-        position: 2
       )

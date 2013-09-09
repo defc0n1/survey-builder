@@ -35,7 +35,7 @@
   </div>
 </template>
 
-<template name="shortInput">
+<template name="inputField">
   {{#if isFocused}}
     <div class="question focused">
       {{> fieldTools}}
@@ -56,7 +56,11 @@
       <div class="row-fluid bottom-options">
         <button class="btn btn-primary span2 done">Done</button>
         <label class="checkbox span2">
-          <input type="checkbox" class="required-check"> Required
+          <input type="checkbox" class="required-check"
+          {{#if required}}
+            checked
+          {{/if}}
+          > Required
         </label>
       </div>
     </div>
@@ -70,7 +74,62 @@
         {{title}}
       </h4>
       <p class="description">{{description}}</p>
-      <input class="short-input span4 type='text'" />
+      {{#if isShort}}
+        <input class="short-input span4 type='text'" />
+      {{else}}
+        <textarea class="long-input span8" />
+      {{/if}}
+    </div>
+  {{/if}}
+</template>
+
+<template name="multipleChoice">
+    {{#if isFocused}}
+    <div class="question focused">
+      {{> fieldTools}}
+      <form class="form-horizontal">
+        <div class="control-group">
+          <label class="control-label" for="questionTitle">Question:</label>
+          <div class="controls">
+            <input type="text" name="questionTitle" class="input-xxlarge questionTitle" placeholder="Question Title" value="{{title}}">
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="questionHelpText">Help Text:</label>
+          <div class="controls">
+            <input type="text" name="questionHelpText" class="input-xxlarge questionHelpText" placeholder="Help Text" value="{{description}}">
+          </div>
+        </div>
+        {{#each options}}
+          <div class="control-group">
+            <input type="checkbox" class="multiple-choice control-label" />
+            <div class="controls">
+              <input type="text" class="multiple-choice" placeholder="option1" {{option}}/>
+            </div>
+          </div>
+        {{/each}}
+      </form>
+      <div class="row-fluid bottom-options">
+        <button class="btn btn-primary span2 done">Done</button>
+        <label class="checkbox span2">
+          <input type="checkbox" class="required-check"
+          {{#if required}}
+            checked
+          {{/if}}
+          > Required
+        </label>
+      </div>
+    </div>
+  {{else}}
+    <div class="question">
+      {{> fieldTools}}
+      <h4>
+        {{#if required}}
+        *
+        {{/if}}
+        {{title}}
+      </h4>
+      <p class="description">{{description}}</p>
     </div>
   {{/if}}
 </template>
@@ -89,8 +148,18 @@
       <li><a href="#standard" data-toggle="tab">Standard</a></li>
       <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
       <li><a href="#appearance" data-toggle="tab">Appearance</a></li>
-      <li><a href="#optio" data-toggle="tab">Options</a></li>
+      <li><a href="#options" data-toggle="tab">Options</a></li>
     </ul>
+    <div class="tab-content">
+      <div class="tab-pane active offset1" id="standard">
+        <a class="btn btn-primary btn-small short-input">Short Answer</a>
+        <a class="btn btn-primary btn-small long-input">Long Answer</a>
+        <a class="btn btn-primary btn-small multiple-choice">Multiple Choice</a>
+      </div>
+      <div class="tab-pane" id="advanced">...</div>
+      <div class="tab-pane" id="appearance">...</div>
+      <div class="tab-pane" id="options">...</div>
+    </div>
   </div>
 </template>
 
